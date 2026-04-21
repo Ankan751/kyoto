@@ -183,17 +183,18 @@ const listproperty = async (req, res) => {
         }
 
         // Exact numeric boundary handling for price
-        if (minPrice !== undefined || maxPrice !== undefined) {
-            query.price = {};
-            if (minPrice !== undefined && minPrice !== '') {
-                query.price.$gte = Number(minPrice);
+        if (minPrice !== undefined && minPrice !== '') {
+            const min = Number(minPrice);
+            if (!Number.isNaN(min)) {
+                query.price = query.price || {};
+                query.price.$gte = min;
             }
-            if (maxPrice !== undefined && maxPrice !== '') {
-                query.price.$lte = Number(maxPrice);
-            }
-            // Clean up if no boundaries were actually added
-            if (Object.keys(query.price).length === 0) {
-                delete query.price;
+        }
+        if (maxPrice !== undefined && maxPrice !== '') {
+            const max = Number(maxPrice);
+            if (!Number.isNaN(max)) {
+                query.price = query.price || {};
+                query.price.$lte = max;
             }
         }
 
@@ -275,7 +276,8 @@ const listproperty = async (req, res) => {
         });
         res.status(500).json({ 
             message: "Internal Server Error", 
-            error: process.env.NODE_ENV === 'development' ? error.message : "Failed to fetch property list",
+            error: error.message,
+            stack: error.stack,
             success: false 
         });
     }

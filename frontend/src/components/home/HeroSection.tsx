@@ -60,7 +60,7 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* LAYER 2: Animated Text (Behind the Statue) */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 mt-[-45vh] sm:mt-[-10vh] z-10 pointer-events-none">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 mt-[calc(-45vh-30px)] sm:mt-[-10vh] z-10 pointer-events-none">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -183,7 +183,7 @@ const HeroSection: React.FC = () => {
                 className={cn(
                   "font-red-hat text-[10px] sm:text-xs font-black uppercase tracking-widest px-5 sm:px-9 py-2.5 sm:py-3.5 rounded-xl transition-all duration-500 shadow-xl active:scale-95 flex items-center justify-center gap-2 mt-3 sm:mt-0",
                   searchMode === 'ai'
-                    ? "bg-[#C5A059] text-[#1C1B1A] hover:bg-[#B89345]"
+                    ? "bg-white text-[#1F3A5F] hover:bg-[#FAF8F4]"
                     : "bg-white text-[#1F3A5F] hover:bg-[#FAF8F4]"
                 )}
               >

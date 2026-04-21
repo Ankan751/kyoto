@@ -89,7 +89,7 @@ const Navbar: React.FC = () => {
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="absolute top-0 left-0 w-full h-screen bg-[#1C1B1A] z-[90] lg:hidden flex flex-col items-center justify-center p-8 text-center"
+            className="absolute top-0 left-0 w-full h-screen bg-white z-[90] lg:hidden flex flex-col items-center justify-center p-8 text-center"
           >
             {/* Close Button Inside Menu */}
             <button

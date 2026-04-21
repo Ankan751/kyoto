@@ -4,7 +4,6 @@ import Footer from '../components/common/Footer';
 import { useSEO } from '../hooks/useSEO';
 import AboutHeroSection from '../components/about/AboutHeroSection';
 import AboutHeritageSection from '../components/about/AboutHeritageSection';
-import AboutAISection from '../components/about/AboutAISection';
 import WhyChooseSection from '../components/about/WhyChooseSection';
 import AboutCTASection from '../components/about/AboutCTASection';
 
@@ -25,9 +24,6 @@ const AboutUsPage: React.FC = () => {
 
       {/* Our Heritage Section - History & Trust */}
       <AboutHeritageSection />
-
-      {/* AI Intelligence Section - Innovation */}
-      <AboutAISection />
 
       {/* Why Choose Us Section - Specific Value */}
       <WhyChooseSection />

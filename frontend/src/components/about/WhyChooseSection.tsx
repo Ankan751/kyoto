@@ -68,38 +68,38 @@ const WhyChooseSection: React.FC = () => {
           </p>
         </motion.div>
 
-        {/* Reasons Grid */}
+        {/* Reasons Grid - 2 columns on mobile */}
         <motion.div 
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12"
+          className="grid grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-12"
         >
           {reasons.map((item, index) => (
             <motion.div 
               variants={itemVariants} 
               key={index} 
               className={cn(
-                "flex flex-col items-start text-left group cursor-pointer p-8 rounded-3xl transition-all duration-500 border border-[#1F3A5F]/5 bg-white/50 backdrop-blur-sm hover:bg-white hover:shadow-[0_20px_50px_rgba(31,58,95,0.08)] hover:-translate-y-2",
+                "flex flex-col items-start text-left group cursor-pointer p-4 sm:p-8 rounded-2xl sm:rounded-3xl transition-all duration-500 border border-[#1F3A5F]/5 bg-white/50 backdrop-blur-sm hover:bg-white hover:shadow-[0_20px_50px_rgba(31,58,95,0.08)] hover:-translate-y-2",
                 index % 2 === 1 ? "lg:translate-y-8" : ""
               )}
             >
-              {/* Icon Container with Glass Effect */}
-              <div className="w-16 h-16 rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center mb-8 group-hover:bg-[#C5A059] group-hover:border-[#C5A059] transition-all duration-500 shadow-sm">
-                <item.icon className="w-7 h-7 text-[#C5A059] group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
+              {/* Icon Container */}
+              <div className="w-10 h-10 sm:w-16 sm:h-16 rounded-xl sm:rounded-2xl bg-[#C5A059]/10 border border-[#C5A059]/20 flex items-center justify-center mb-4 sm:mb-8 group-hover:bg-[#C5A059] group-hover:border-[#C5A059] transition-all duration-500 shadow-sm">
+                <item.icon className="w-5 h-5 sm:w-7 sm:h-7 text-[#C5A059] group-hover:text-white transition-colors duration-500" strokeWidth={1.5} />
               </div>
 
-              {/* Title with Underline Effect */}
-              <div className="relative mb-4">
-                <h3 className="font-red-hat font-bold text-base text-[#1F3A5F] tracking-[2px] uppercase">
+              {/* Title */}
+              <div className="relative mb-2 sm:mb-4">
+                <h3 className="font-red-hat font-bold text-[10px] sm:text-base text-[#1F3A5F] sm:tracking-[2px] uppercase">
                   {item.title}
                 </h3>
                 <div className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#C5A059] transition-all duration-500 group-hover:w-full" />
               </div>
 
               {/* Description */}
-              <p className="font-red-hat font-medium text-sm text-[#4B5563] leading-relaxed">
+              <p className="font-red-hat font-medium text-[9px] sm:text-sm text-[#4B5563] leading-tight sm:leading-relaxed">
                 {item.description}
               </p>
             </motion.div>

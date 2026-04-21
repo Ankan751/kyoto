@@ -181,13 +181,13 @@ const HeroSection: React.FC = () => {
               <button
                 type="submit"
                 className={cn(
-                  "font-red-hat text-xs sm:text-sm font-black uppercase tracking-widest px-8 sm:px-12 py-4 sm:py-5 rounded-xl transition-all duration-500 shadow-xl active:scale-95 flex items-center justify-center gap-3 mt-2 sm:mt-0",
+                  "font-red-hat text-[10px] sm:text-xs font-black uppercase tracking-widest px-5 sm:px-9 py-2.5 sm:py-3.5 rounded-xl transition-all duration-500 shadow-xl active:scale-95 flex items-center justify-center gap-2 mt-3 sm:mt-0",
                   searchMode === 'ai'
                     ? "bg-[#C5A059] text-[#1C1B1A] hover:bg-[#B89345]"
                     : "bg-white text-[#1F3A5F] hover:bg-[#FAF8F4]"
                 )}
               >
-                {searchMode === 'ai' && <Sparkles className="w-4 h-4" />}
+                {searchMode === 'ai' && <Sparkles className="w-3.5 h-3.5" />}
                 {searchMode === 'ai' ? 'Magic Search' : 'Discover'}
               </button>
             </form>

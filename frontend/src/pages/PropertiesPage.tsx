@@ -283,14 +283,14 @@ const PropertiesPage: React.FC = () => {
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-[100] w-full px-8 pointer-events-none">
         <button
           onClick={() => setMobileFilterOpen(true)}
-          className="pointer-events-auto bg-[#3B5B84] text-white px-10 py-5 rounded-full font-red-hat text-xs font-bold uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3 mx-auto border border-white/10 backdrop-blur-md active:scale-95 hover:scale-105 transition-all w-fit group"
+          className="pointer-events-auto bg-[#3B5B84] text-white px-7 py-3.5 rounded-full font-red-hat text-xs font-bold uppercase tracking-widest shadow-2xl flex items-center justify-center gap-3 mx-auto border border-white/10 backdrop-blur-md active:scale-95 hover:scale-105 transition-all w-fit group"
         >
           <div className="relative group/icon">
             {/* Ambient Glow */}
             <div className="absolute inset-0 bg-[#38BDF8]/40 blur-md rounded-full group-hover:blur-lg transition-all duration-500" />
             
-            <span className="relative w-8 h-8 flex items-center justify-center bg-gradient-to-br from-[#E1C288] via-[#38BDF8] to-[#0EA5E9] rounded-full border border-white/20 shadow-inner group-hover:rotate-[360deg] transition-transform duration-1000 ease-in-out overflow-hidden">
-              <span className="material-icons text-[16px] text-white drop-shadow-md">tune</span>
+            <span className="relative w-7 h-7 flex items-center justify-center bg-gradient-to-br from-[#E1C288] via-[#38BDF8] to-[#0EA5E9] rounded-full border border-white/20 shadow-inner group-hover:rotate-[360deg] transition-transform duration-1000 ease-in-out overflow-hidden">
+              <span className="material-icons text-[14px] text-white drop-shadow-md">tune</span>
               
               {/* Shine Sweep Effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out" />

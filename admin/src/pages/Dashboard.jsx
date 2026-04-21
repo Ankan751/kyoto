@@ -119,8 +119,22 @@ const ActivityItem = ({ item }) => {
     return item.description;
   };
 
-  return (
-    <div className="flex items-start gap-3 py-3 border-b border-[#F5F1E8] last:border-0">
+  const getLink = () => {
+    if (isAdminLog) {
+      if (item.targetType === 'property' && item.targetId) return `/update/${item.targetId}`;
+      if (item.targetType === 'user' && item.targetId) return `/users/${item.targetId}`;
+    }
+    if (isProperty && item._id) return `/update/${item._id}`;
+    return null;
+  };
+
+  const link = getLink();
+
+  const content = (
+    <div className={cn(
+      "flex items-start gap-3 py-3 border-b border-[#F5F1E8] last:border-0 rounded-xl px-2 -mx-2 transition-colors",
+      link && "hover:bg-[#FAF8F4] cursor-pointer"
+    )}>
       <div className={cn(
         "w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5",
         getActionColor()
@@ -142,6 +156,12 @@ const ActivityItem = ({ item }) => {
       </div>
     </div>
   );
+
+  if (link) {
+    return <Link to={link} className="block group">{content}</Link>;
+  }
+
+  return content;
 };
 
 // ─── Main Dashboard ───────────────────────────────────────────────────────────

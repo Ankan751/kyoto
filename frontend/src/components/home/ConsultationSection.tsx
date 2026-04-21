@@ -12,10 +12,11 @@ const ConsultationSection: React.FC<ConsultationSectionProps> = ({ defaultProper
     fullName: '',
     email: '',
     phone: '',
+    description: '',
   });
   const [submitting, setSubmitting] = useState(false);
 
-  const handleBookingInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleBookingInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     setBookingData({
       ...bookingData,
       [e.target.name]: e.target.value
@@ -33,12 +34,13 @@ const ConsultationSection: React.FC<ConsultationSectionProps> = ({ defaultProper
         email: bookingData.email,
         phone: bookingData.phone,
         message: 'General consultation request from the home page.',
+        description: bookingData.description,
       });
 
       toast.success('Consultation Request Submitted!', {
         description: "We'll contact you shortly to schedule your call."
       });
-      setBookingData({ fullName: '', email: '', phone: '' });
+      setBookingData({ fullName: '', email: '', phone: '', description: '' });
     } catch (err: any) {
       console.error('Failed to schedule consultation:', err);
       toast.error('Submission Failed', {
@@ -89,30 +91,47 @@ const ConsultationSection: React.FC<ConsultationSectionProps> = ({ defaultProper
               className="w-full bg-[#14263D] border border-white/10 rounded-lg p-4 font-red-hat text-sm text-white placeholder-gray-500 focus:ring-1 focus:ring-black outline-none transition-all"
             />
           </div>
-          <div>
-            <label className="block font-manrope  font-bold text-xs uppercase tracking-widest mb-2 opacity-100 text-white">Email Address</label>
-            <input
-              type="email"
-              name="email"
-              required
-              value={bookingData.email}
-              onChange={handleBookingInputChange}
-              placeholder="your.email@example.com"
-              className="w-full bg-[#14263D] border border-white/10 rounded-lg p-4 font-red-hat text-sm text-white placeholder-gray-500 focus:ring-1 focus:ring-black outline-none transition-all"
-            />
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div>
+              <label className="block font-manrope  font-bold text-xs uppercase tracking-widest mb-2 opacity-100 text-white">Email Address</label>
+              <input
+                type="email"
+                name="email"
+                required
+                value={bookingData.email}
+                onChange={handleBookingInputChange}
+                placeholder="your.email@example.com"
+                className="w-full bg-[#14263D] border border-white/10 rounded-lg p-4 font-red-hat text-sm text-white placeholder-gray-500 focus:ring-1 focus:ring-black outline-none transition-all"
+              />
+            </div>
+            <div>
+              <label className="block font-manrope  font-bold text-xs uppercase tracking-widest mb-2 opacity-100 text-white">Phone Number</label>
+              <input
+                type="tel"
+                name="phone"
+                required
+                value={bookingData.phone}
+                onChange={handleBookingInputChange}
+                placeholder="+91 98765 43210"
+                className="w-full bg-[#14263D] border border-white/10 rounded-lg p-4 font-red-hat text-sm text-white placeholder-gray-500 focus:ring-1 focus:ring-black outline-none transition-all"
+              />
+            </div>
           </div>
+
           <div>
-            <label className="block font-manrope  font-bold text-xs uppercase tracking-widest mb-2 opacity-100 text-white">Phone Number</label>
-            <input
-              type="tel"
-              name="phone"
-              required
-              value={bookingData.phone}
-              onChange={handleBookingInputChange}
-              placeholder="+91 98765 43210"
-              className="w-full bg-[#14263D] border border-white/10 rounded-lg p-4 font-red-hat text-sm text-white placeholder-gray-500 focus:ring-1 focus:ring-black outline-none transition-all"
-            />
-          </div>
+             <label className="flex items-center gap-1.5 font-manrope font-bold text-xs uppercase tracking-widest mb-2 text-white">
+               Your Requirements
+               <span className="px-1.5 py-0.5 bg-sky-500/20 text-sky-400 rounded text-[10px] border border-sky-400/20">AI</span>
+             </label>
+             <textarea
+               name="description"
+               value={bookingData.description}
+               onChange={handleBookingInputChange}
+               placeholder="Tell us exactly what you're looking for (e.g., 3 BHK Villa in Model Town under 50 Lakh)..."
+               rows={3}
+               className="w-full bg-[#14263D] border border-white/10 rounded-lg p-4 font-red-hat text-sm text-white placeholder-gray-500 focus:ring-1 focus:ring-black outline-none transition-all resize-none shadow-inner"
+             ></textarea>
+           </div>
 
           <button
             type="submit"

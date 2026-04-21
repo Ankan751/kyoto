@@ -86,9 +86,11 @@ const NLSearch: React.FC = () => {
         {/* Hero Section */}
         <section className="relative pt-12 pb-16 px-4 overflow-hidden">
           {/* Decorative background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-[#1F3A5F] via-[#2A4A7A] to-white" />
+          <div className="absolute inset-0" style={{ 
+            background: 'linear-gradient(135deg, #f8f5f0 0%, #e8e2d9 50%, #d6ccc2 100%)' 
+          }} />
           <div className="absolute inset-0 opacity-10" style={{
-            backgroundImage: 'radial-gradient(circle at 30% 20%, #C5A059 0%, transparent 50%), radial-gradient(circle at 70% 80%, #C5A059 0%, transparent 50%)'
+            backgroundImage: 'radial-gradient(circle at 30% 20%, #8b6f47 0%, transparent 50%), radial-gradient(circle at 70% 80%, #8b6f47 0%, transparent 50%)'
           }} />
 
           <div className="relative max-w-4xl mx-auto text-center">
@@ -96,17 +98,17 @@ const NLSearch: React.FC = () => {
             <motion.div
               initial={{ opacity: 0, y: -10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-full mb-6"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#8b6f47]/10 border border-[#8b6f47]/20 rounded-full mb-6"
             >
-              <Brain className="w-4 h-4 text-[#C5A059]" />
-              <span className="text-sm font-medium text-[#C5A059]">Powered by AI</span>
+              <Brain className="w-4 h-4 text-[#8b6f47]" />
+              <span className="text-sm font-medium text-[#8b6f47]">Powered by AI</span>
             </motion.div>
 
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white mb-4 font-playfair"
+              className="text-4xl sm:text-5xl lg:text-6xl font-bold text-[#1C1B1A] mb-4 font-playfair"
             >
               Find Your Dream Property
             </motion.h1>
@@ -115,7 +117,7 @@ const NLSearch: React.FC = () => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 }}
-              className="text-lg text-white/60 mb-10 max-w-2xl mx-auto"
+              className="text-lg text-[#5A5856] mb-10 max-w-2xl mx-auto"
             >
               Describe what you're looking for in plain English — our AI will understand and find the best matches.
             </motion.p>
@@ -128,8 +130,8 @@ const NLSearch: React.FC = () => {
               onSubmit={handleSubmit}
               className="relative max-w-3xl mx-auto"
             >
-              <div className="relative flex items-center bg-white rounded-2xl shadow-2xl shadow-black/10 border border-white/20 overflow-hidden">
-                <Sparkles className="absolute left-5 w-5 h-5 text-[#C5A059]" />
+              <div className="relative flex items-center bg-white rounded-2xl shadow-2xl shadow-black/5 border border-[#8b6f47]/20 overflow-hidden">
+                <Sparkles className="absolute left-5 w-5 h-5 text-[#8b6f47]" />
                 <input
                   type="text"
                   value={query}
@@ -140,7 +142,7 @@ const NLSearch: React.FC = () => {
                 <button
                   type="submit"
                   disabled={loading || !query.trim()}
-                  className="absolute right-2.5 flex items-center gap-2 px-6 py-3 bg-[#1C1B1A] hover:bg-[#C5A059] text-white text-sm font-bold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
+                  className="absolute right-2.5 flex items-center gap-2 px-6 py-3 bg-[#1C1B1A] hover:bg-[#8b6f47] text-white text-sm font-bold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider"
                 >
                   {loading ? (
                     <Loader2 className="w-4 h-4 animate-spin" />
@@ -165,7 +167,7 @@ const NLSearch: React.FC = () => {
                 <button
                   key={i}
                   onClick={() => { setQuery(eq); handleSearch(eq); }}
-                  className="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 text-white/70 hover:text-white text-xs rounded-full transition-all border border-white/10 hover:border-white/20"
+                  className="px-3.5 py-1.5 bg-[#8b6f47]/5 hover:bg-[#8b6f47]/10 text-[#8b6f47]/70 hover:text-[#8b6f47] text-xs rounded-full transition-all border border-[#8b6f47]/10 hover:border-[#8b6f47]/20"
                 >
                   {eq}
                 </button>
@@ -201,8 +203,8 @@ const NLSearch: React.FC = () => {
                 }
               ].map((feature, i) => (
                 <div key={i} className="bg-white rounded-2xl p-6 border border-[#E8E2DA] text-center">
-                  <div className="w-12 h-12 bg-[#C5A059]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
-                    <feature.icon className="w-6 h-6 text-[#C5A059]" />
+                  <div className="w-12 h-12 bg-[#8b6f47]/10 rounded-xl flex items-center justify-center mx-auto mb-4">
+                    <feature.icon className="w-6 h-6 text-[#8b6f47]" />
                   </div>
                   <h3 className="font-bold text-[#1C1B1A] mb-2">{feature.title}</h3>
                   <p className="text-sm text-[#6B7280]">{feature.description}</p>
@@ -220,10 +222,10 @@ const NLSearch: React.FC = () => {
               <motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 p-4 bg-[#C5A059]/5 border border-[#C5A059]/15 rounded-xl"
+                className="mb-6 p-4 bg-[#8b6f47]/5 border border-[#8b6f47]/15 rounded-xl"
               >
                 <p className="text-sm text-[#5A5856]">
-                  <span className="font-bold text-[#C5A059]">AI understood: </span>
+                  <span className="font-bold text-[#8b6f47]">AI understood: </span>
                   {parsedQuery.city && <span>City: <strong>{parsedQuery.city}</strong> · </span>}
                   {parsedQuery.locality && <span>Area: <strong>{parsedQuery.locality}</strong> · </span>}
                   {parsedQuery.bhk?.preferred && <span>BHK: <strong>{parsedQuery.bhk.preferred.join(', ')}</strong> · </span>}
@@ -237,7 +239,7 @@ const NLSearch: React.FC = () => {
               <div className="flex flex-col items-center justify-center py-20">
                 <div className="relative">
                   <div className="w-16 h-16 border-4 border-[#E8E2DA] rounded-full" />
-                  <div className="absolute inset-0 w-16 h-16 border-4 border-[#C5A059] border-t-transparent rounded-full animate-spin" />
+                  <div className="absolute inset-0 w-16 h-16 border-4 border-[#8b6f47] border-t-transparent rounded-full animate-spin" />
                 </div>
                 <p className="mt-6 text-[#6B7280] font-medium">AI is analyzing your query...</p>
                 <p className="text-sm text-[#9CA3AF] mt-1">This may take a few seconds</p>

@@ -4,7 +4,7 @@ const appointmentSchema = new mongoose.Schema({
   propertyId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Property',
-    required: true
+    required: false
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,

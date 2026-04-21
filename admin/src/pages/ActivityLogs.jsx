@@ -8,6 +8,7 @@ import {
   EyeIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import { Link } from 'react-router-dom';
 import ActivityLogDetailModal from '../components/ActivityLogDetailModal';
 import apiClient from '../services/apiClient';
 
@@ -440,9 +441,18 @@ const ActivityLogs = () => {
                           {log.targetType}
                         </span>
                         {log.targetName && (
-                          <span className="text-sm text-gray-600 max-w-40 truncate">
-                            {log.targetName}
-                          </span>
+                          log.targetId ? (
+                            <Link 
+                              to={log.targetType === 'property' ? `/update/${log.targetId}` : `/users/${log.targetId}`}
+                              className="text-sm text-[#C5A059] hover:text-[#C06549] font-medium max-w-40 truncate hover:underline"
+                            >
+                              {log.targetName}
+                            </Link>
+                          ) : (
+                            <span className="text-sm text-gray-600 max-w-40 truncate">
+                              {log.targetName}
+                            </span>
+                          )
                         )}
                       </div>
                     </td>

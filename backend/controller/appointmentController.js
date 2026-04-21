@@ -249,18 +249,29 @@ export const scheduleViewing = async (req, res) => {
     const guestEmail = email;
     const guestName = name;
 
-    // Check if property exists
-    const property = await Property.findById(propertyId);
-    if (!property) {
-      return res.status(404).json({
-        success: false,
-        message: 'Property not found'
-      });
+    // Check if property exists (Only for specific property requests)
+    let property = null;
+    const isGeneral = !propertyId || propertyId === 'general' || propertyId === 'undefined';
+
+    if (!isGeneral) {
+        try {
+            property = await Property.findById(propertyId);
+            if (!property) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Property not found'
+                });
+            }
+        } catch (err) {
+            // If it's a malformed ObjectID, treat as general or return error?
+            // Let's treat as general if it's from the home page.
+            property = null;
+        }
     }
 
     // Build appointment data — link user if logged in, else store guest info
     const appointmentData = {
-      propertyId,
+        propertyId: property ? property._id : null,
       ...(date && { date }),
       ...(time && { time }),
       notes: notes || message || '',
@@ -274,7 +285,7 @@ export const scheduleViewing = async (req, res) => {
     if (description) {
         try {
             const parsed = await parseWithGrok(description);
-            const userRequirements = validate(parsed);
+            const userRequirements = validate(parsed, description, property);
             const scoreObj = calculateScore(property, userRequirements);
             
             appointmentData.matchingScore = scoreObj.total;
@@ -287,12 +298,12 @@ export const scheduleViewing = async (req, res) => {
                 const allProperties = await Property.find(query);
                 
                 const suggestions = allProperties
-                    .filter(p => p._id.toString() !== propertyId.toString())
+                    .filter(p => !property || p._id.toString() !== property._id.toString())
                     .map(p => ({
                         property: p,
                         score: calculateScore(p, userRequirements).total
                     }))
-                    .filter(item => item.score >= 0.4)
+                    .filter(item => item.score >= 0.5)
                     .sort((a, b) => b.score - a.score)
                     .slice(0, 3)
                     .map(item => ({

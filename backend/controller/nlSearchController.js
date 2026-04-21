@@ -1,17 +1,23 @@
 import Property from '../models/propertyModel.js';
 import { parseWithGrok } from '../services/grokService.js';
 import logger from '../utils/logger.js';
-import { getExpandedSearchTerms } from '../utils/geoMapping.js';
 
 // 5. Validation Layer
-export function validate(data, originalQuery = '') {
+export function validate(data, originalQuery = '', context = {}) {
   // Check if BHK was explicitly provided by the AI or mentioned in the query
   const hasBHKInQuery = /bhk|bedroom|room|rk/i.test(originalQuery);
   const hasBHKInParsed = data.bhk && data.bhk.preferred && data.bhk.preferred.length > 0;
   
   data.bhkSpecified = hasBHKInQuery || hasBHKInParsed;
 
-  if (!data.city) throw new Error("City required");
+  // For appointments, we can default the city to the property city
+  if (!data.city && context.city) {
+    data.city = context.city;
+  }
+
+  // If still no city, but it's a search, we might throw, 
+  // but let's just default to a fallback or allow it to be empty for scoring.
+  if (!data.city) data.city = "Jalandhar"; // Default market
 
   if (!data.bhk || !data.bhk.preferred || !data.bhk.preferred.length) {
     data.bhk = data.bhk || {};
@@ -26,26 +32,20 @@ export function validate(data, originalQuery = '') {
   return data;
 }
 
-// 6. Hard Filters (Minimal)
+// 6. Hard Filters (Strict)
 export function buildQuery(data) {
   const query = {
     status: 'active'
   };
 
-  // Expand City Search (Combine Hardcoded + AI suggestions)
-  const nearbyTownsStatic = getExpandedSearchTerms('city', data.city);
-  const nearbyTownsAI = data.nearby_towns || [];
-  const cityTerms = [...new Set([data.city, ...nearbyTownsStatic, ...nearbyTownsAI])];
+  // Strict City Search
+  if (data.city) {
+    query.city = new RegExp(`^${data.city}$`, 'i');
+  }
 
-  query.city = { $in: cityTerms.filter(Boolean).map(c => new RegExp(c, 'i')) };
-
-  // Expand Locality Search (Combine Hardcoded + AI suggestions)
+  // Strict Locality Search (Still optional if only city is provided)
   if (data.locality) {
-    const nearbyLocalitiesStatic = getExpandedSearchTerms('locality', data.locality);
-    const nearbyLocalitiesAI = data.nearby_localities || [];
-    const localityTerms = [...new Set([data.locality, ...nearbyLocalitiesStatic, ...nearbyLocalitiesAI])];
-
-    query.locality = { $in: localityTerms.filter(Boolean).map(l => new RegExp(l, 'i')) };
+    query.locality = new RegExp(`^${data.locality}$`, 'i');
   }
 
   return query;
@@ -53,8 +53,13 @@ export function buildQuery(data) {
 
 // 7.1 Price (Sigmoid Normalization)
 function priceScore(price, budget) {
-  const x = (price / budget) - 1;
-  return 1 / (1 + Math.exp(8 * x));
+  if (price <= budget) return 1.0;
+  
+  // Over budget scoring: use a sigmoid that stays near 1.0 for small overages 
+  // and drops off after 10-15% overage.
+  const overageRatio = (price / budget); // e.g. 1.1 for 10% over
+  const x = overageRatio - 1.1; // Centered at 10% over budget
+  return 1 / (1 + Math.exp(12 * x)); 
 }
 
 // 7.2 BHK Score
@@ -85,6 +90,13 @@ function amenitiesScore(property, user) {
 
 // 7.4 Final Score
 export function calculateScore(property, user) {
+  if (!property) {
+    return {
+      total: 0,
+      details: { note: "No specific property to score against" }
+    };
+  }
+
   const propertyBHK = property.bhk || property.beds || 0;
   const p = priceScore(property.price, user.budget.max);
   const b = bhkScore(propertyBHK, user.bhk.preferred[0]);
@@ -92,9 +104,21 @@ export function calculateScore(property, user) {
   
   // Type score
   let t = 1;
-  if (user.type && property.type) {
+  const genericTypes = ['property', 'place', 'listing', 'real estate', 'home', 'unit'];
+  const isGenericRequest = user.type && genericTypes.includes(user.type.toLowerCase().trim());
+  
+  if (user.type && property.type && !isGenericRequest) {
       t = property.type.toLowerCase().includes(user.type.toLowerCase()) ? 1 : 0.7;
   }
+
+  const details = {
+    priceScore: p,
+    bhkScore: b,
+    amenitiesScore: a,
+    typeScore: t,
+    isWithinBudget: property.price <= user.budget.max,
+    matchesBHK: propertyBHK === user.bhk.preferred[0]
+  };
 
   const diff = propertyBHK - user.bhk.preferred[0];
   const absDiff = Math.abs(diff);
@@ -109,9 +133,9 @@ export function calculateScore(property, user) {
   }
 
   let score =
-    0.35 * p +
+    0.40 * p +
     0.25 * (user.bhkSpecified ? b : 1.0) +
-    0.25 * a +
+    0.20 * a +
     0.15 * t;
 
   // Apply specific BHK penalties only if BHK was requested
@@ -123,46 +147,24 @@ export function calculateScore(property, user) {
       }
   }
 
-  // ensure score doesn't go below 0
-  score = Math.max(0, score);
-
-  // NEARBY PENALTY (50% reduction for neighboring localities/towns)
-  const requestedCity = (user.city || "").toLowerCase().trim();
+  // 12. LOCALITY VALIDATION (Strict)
   const requestedLocality = (user.locality || "").toLowerCase().trim();
-  
-  const propertyCity = (property.city || "").toLowerCase().trim();
   const propertyLocality = (property.locality || "").toLowerCase().trim();
 
-  const isExactCity = !requestedCity || propertyCity === requestedCity;
-  const isExactLocality = !requestedLocality || propertyLocality === requestedLocality;
-
-  // If it's a match but not the exact primary one, penalize it
-  if (!isExactCity || !isExactLocality) {
-    score = score * 0.5;
-  }
-
-  // upgrade bonus
-  if (
-    propertyBHK === user.bhk.preferred[0] + 1 &&
-    p > 0.6 &&
-    isExactLocality // only give bonus for exact matches
-  ) {
-    score += 0.05;
+  // If user asked for a locality and it doesn't match exactly, score is 0
+  if (requestedLocality && requestedLocality !== propertyLocality) {
+    return {
+      total: 0,
+      details: { ...details, localityMatch: false }
+    };
   }
 
   // Final cap: score should never exceed 1.0 (100%)
   score = Math.min(1.0, score);
 
   return {
-      total: score,
-      details: {
-          priceScore: p,
-          bhkScore: b,
-          amenitiesScore: a,
-          typeScore: t,
-          isWithinBudget: property.price <= user.budget.max,
-          matchesBHK: propertyBHK === user.bhk.preferred[0]
-      }
+    total: score,
+    details: { ...details, localityMatch: true }
   };
 }
 

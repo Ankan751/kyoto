@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Calendar, User, Home, Check, X, Loader2,
@@ -330,12 +331,12 @@ const Appointments = () => {
                   className="bg-white rounded-2xl border border-[#E6D5C3] shadow-sm overflow-hidden hover:shadow-md transition-shadow flex flex-col h-fit"
                 >
                   {/* Property Banner */}
-                  <div className="bg-[#1C1B1A] px-5 py-4 flex items-start gap-3">
-                    <div className="w-9 h-9 bg-[#C5A059] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5">
+                  <Link to={`/update/${apt.propertyId?._id}`} className="block bg-[#1C1B1A] px-5 py-4 flex items-start gap-3 group/prop hover:bg-[#1C1B1A]/90 transition-colors">
+                    <div className="w-9 h-9 bg-[#C5A059] rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 group-hover/prop:scale-110 transition-transform">
                       <Building2 className="w-4 h-4 text-white" />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-[#FAF8F4] truncate">
+                      <p className="text-sm font-bold text-[#FAF8F4] truncate group-hover/prop:text-[#C5A059] transition-colors">
                         {apt.propertyId?.title || "Unknown Property"}
                       </p>
                       <p className="text-xs text-[#9CA3AF] truncate mt-0.5">
@@ -343,7 +344,7 @@ const Appointments = () => {
                       </p>
                     </div>
                     <MatchScoreBadge score={apt.matchingScore} />
-                  </div>
+                  </Link>
 
                   {/* Status Strip */}
                   <div className="px-5 py-2 bg-[#FAF8F4] border-b border-[#E6D5C3]/30 flex items-center justify-between">

@@ -399,11 +399,18 @@ const UserDetailsPage = () => {
                         </div>
                         <div className="flex gap-2 mt-3">
                           <button
-                            onClick={() => window.open(`/property/${property._id}`, '_blank')}
-                            className="flex items-center gap-1 px-2 py-1 text-xs border border-[#E6D5C3] rounded hover:bg-[#F5F1E8] transition-colors"
+                            onClick={() => navigate(`/update/${property._id}`)}
+                            className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-semibold bg-[#FAF8F4] border border-[#E6D5C3] text-[#5A5856] rounded-lg hover:border-[#C5A059] hover:text-[#C5A059] transition-all"
                           >
-                            <ExternalLink className="w-3 h-3" />
-                            View
+                            <Home className="w-3.5 h-3.5" />
+                            Edit Property
+                          </button>
+                          <button
+                            onClick={() => window.open(`/property/${property._id}`, '_blank')}
+                            className="p-1.5 text-[#9CA3AF] hover:text-[#C5A059] border border-transparent hover:border-[#E6D5C3] rounded-lg transition-all"
+                            title="View on Site"
+                          >
+                            <ExternalLink className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       </div>

@@ -26,14 +26,12 @@ export const parseWithGrok = async (input) => {
                         {
                           "city": "String (required)",
                           "locality": "String (optional)",
-                          "nearby_localities": [String] (suggest 3-4 neighboring areas if a locality is mentioned),
-                          "nearby_towns": [String] (suggest 2-3 satellite towns if only a city is mentioned),
                           "bhk": {
                             "preferred": [Number],
                             "flexible": Boolean
                           },
                           "budget": {
-                            "max": Number (in numeric units, e.g. 4000000 for 40 lakh)
+                            "max": Number (in numeric units)
                           },
                           "type": "String (e.g. flat, house, villa)",
                           "amenities": [String],
@@ -48,6 +46,7 @@ export const parseWithGrok = async (input) => {
                         - "3 bhk in model town under 40 lakh near bus stand" -> {"city": "Jalandhar", "locality": "Model Town", "bhk": {"preferred": [3], "flexible": false}, "budget": {"max": 4000000}, "amenities": [], "derived_preferences": {"transport_access": true}}
                         
                         If city is not mentioned, infer it if possible or leave empty.
+                        If the user uses a generic term like "property", "place", or "home" without specifying a type (like villa or flat), set "type" to "property".
                         Always return ONLY the JSON object.`
                     },
                     {

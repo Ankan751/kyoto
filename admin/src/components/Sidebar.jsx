@@ -86,7 +86,11 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
         <div className="h-16 flex items-center justify-between px-6 border-b border-white/10 flex-shrink-0">
           {!isCollapsed ? (
             <Link to="/dashboard" className="flex items-center gap-3 group">
-              <img src="/logo.png" alt="Hanumant Properties" className="h-9 w-auto filter brightness-0 invert" />
+              <img 
+                src="https://res.cloudinary.com/diidko3fa/image/upload/f_webp,q_auto/v1776714352/WhatsApp_Image_2026-04-19_at_8.58.17_PM-Photoroom_hpuhgx.png" 
+                alt="Hanumant Properties" 
+                className="h-9 w-auto" 
+              />
               <div>
                 <span className="text-lg font-bold font-fraunces text-[#FAF8F4] tracking-tight">
                   Hanumant Properties
@@ -98,7 +102,11 @@ const Sidebar = ({ isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
             </Link>
           ) : (
             <Link to="/dashboard" className="flex items-center justify-center w-full">
-              <img src="/logo.png" alt="Hanumant Properties" className="h-9 w-auto filter brightness-0 invert" />
+              <img 
+                src="https://res.cloudinary.com/diidko3fa/image/upload/f_webp,q_auto/v1776714352/WhatsApp_Image_2026-04-19_at_8.58.17_PM-Photoroom_hpuhgx.png" 
+                alt="Hanumant Properties" 
+                className="h-9 w-auto" 
+              />
             </Link>
           )}
         </div>

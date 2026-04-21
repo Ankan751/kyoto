@@ -71,7 +71,11 @@ const Login = () => {
         {/* Logo */}
         <div className="relative z-10">
           <div className="flex items-center gap-3 mb-16">
-            <img src="/logo.png" alt="Hanumant Properties" className="h-10 w-auto filter brightness-0 invert" />
+            <img 
+              src="https://res.cloudinary.com/diidko3fa/image/upload/f_webp,q_auto/v1776714352/WhatsApp_Image_2026-04-19_at_8.58.17_PM-Photoroom_hpuhgx.png" 
+              alt="Hanumant Properties" 
+              className="h-10 w-auto" 
+            />
             <div>
               <div className="text-xl font-bold font-fraunces text-[#FAF8F4]">Hanumant Properties</div>
               <div className="text-xs text-[#9CA3AF] font-bold font-red-hat uppercase tracking-widest">Admin Panel</div>
@@ -118,7 +122,11 @@ const Login = () => {
         <div className="w-full max-w-md">
           {/* Mobile Logo */}
           <div className="flex items-center gap-3 mb-10 lg:hidden">
-            <img src="/logo.png" alt="Hanumant Properties Admin" className="h-9 w-auto" />
+            <img 
+              src="https://res.cloudinary.com/diidko3fa/image/upload/f_webp,q_auto/v1776714352/WhatsApp_Image_2026-04-19_at_8.58.17_PM-Photoroom_hpuhgx.png" 
+              alt="Hanumant Properties Admin" 
+              className="h-9 w-auto" 
+            />
             <div className="text-lg font-bold font-fraunces text-[#1C1B1A]">Hanumant Properties Admin</div>
           </div>
 

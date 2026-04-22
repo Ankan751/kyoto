@@ -60,7 +60,7 @@ const HeroSection: React.FC = () => {
       </div>
 
       {/* LAYER 2: Animated Text (Behind the Statue) */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 mt-[calc(-45vh-30px)] sm:mt-[-10vh] z-10 pointer-events-none">
+      <div className="absolute inset-0 flex flex-col items-center justify-center px-4 sm:px-8 mt-[calc(-45vh-30px)] sm:mt-[-10vh] z-10 pointer-events-none -translate-y-[50px] sm:translate-y-0">
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -75,11 +75,11 @@ const HeroSection: React.FC = () => {
             <div className="h-px w-8 bg-white/80" />
           </motion.div>
 
-          <motion.h1 className="font-fraunces font-bold text-[16vw] lg:mb-32 mb-[-60px] sm:text-[14vw] lg:text-[12vw] text-white/95 uppercase leading-[0.85] tracking-tight drop-shadow-2xl flex flex-col items-center w-full">
+          <motion.h1 className="font-fraunces font-bold text-[16vw] lg:mb-32 mb-[-60px] sm:text-[14vw] mb-[-60px] lg:text-[12vw] text-white/95 uppercase leading-[0.85] tracking-tight drop-shadow-2xl flex flex-col items-center w-full">
             <motion.span variants={itemVariants} className="block mb-3">
               HANUMANT
             </motion.span>
-            <motion.span variants={itemVariants} className="block ">
+            <motion.span variants={itemVariants} className="block">
               PROPERTIES
             </motion.span>
           </motion.h1>

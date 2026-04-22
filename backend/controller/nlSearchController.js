@@ -10,6 +10,12 @@ export function validate(data, originalQuery = '', context = {}) {
   
   data.bhkSpecified = hasBHKInQuery || hasBHKInParsed;
 
+  // Check if Type was explicitly provided (e.g. "flat", "villa", "house", "plot")
+  const typeKeywords = ['flat', 'villa', 'house', 'plot', 'apartment', 'bungalow', 'penthouse', 'land', 'shop', 'office'];
+  const hasTypeInQuery = typeKeywords.some(kw => originalQuery.toLowerCase().includes(kw));
+  data.typeSpecified = hasTypeInQuery;
+
+
   // For appointments, we can default the city to the property city
   if (!data.city && context.city) {
     data.city = context.city;
@@ -38,14 +44,14 @@ export function buildQuery(data) {
     status: 'active'
   };
 
-  // Strict City Search
+  // Flexible City Search
   if (data.city) {
-    query.city = new RegExp(`^${data.city}$`, 'i');
+    query.city = new RegExp(data.city, 'i');
   }
 
-  // Strict Locality Search (Still optional if only city is provided)
+  // Flexible Locality Search
   if (data.locality) {
-    query.locality = new RegExp(`^${data.locality}$`, 'i');
+    query.locality = new RegExp(data.locality, 'i');
   }
 
   return query;
@@ -74,10 +80,6 @@ function bhkScore(propertyBHK, preferred) {
 function amenitiesScore(property, user) {
   const requirements = [...(user.amenities || [])];
 
-  if (user.derived_preferences?.transport_access) requirements.push('transport_access');
-  if (user.derived_preferences?.school_nearby) requirements.push('school_nearby');
-  if (user.derived_preferences?.premium_locality) requirements.push('premium_locality');
-
   if (requirements.length === 0) return 1.0; // 100% match if user has no specific demands
 
   const propertyFeatures = [...(property.amenities || []), ...(property.tags || [])];
@@ -86,6 +88,23 @@ function amenitiesScore(property, user) {
   );
 
   return matches.length / requirements.length;
+}
+
+// 7.3b Derived Preferences Boost
+function derivedScore(property, user) {
+  const preferences = [];
+  if (user.derived_preferences?.transport_access) preferences.push('transport_access');
+  if (user.derived_preferences?.school_nearby) preferences.push('school_nearby');
+  if (user.derived_preferences?.premium_locality) preferences.push('premium_locality');
+
+  if (preferences.length === 0) return 1.0; 
+
+  const propertyFeatures = [...(property.amenities || []), ...(property.tags || [])];
+  const matches = preferences.filter(req => 
+      propertyFeatures.some(f => f.toLowerCase().includes(req.toLowerCase()))
+  );
+
+  return matches.length / preferences.length;
 }
 
 // 7.4 Final Score
@@ -101,6 +120,7 @@ export function calculateScore(property, user) {
   const p = priceScore(property.price, user.budget.max);
   const b = bhkScore(propertyBHK, user.bhk.preferred[0]);
   const a = amenitiesScore(property, user);
+  const d = derivedScore(property, user);
   
   // Type score
   let t = 1;
@@ -110,14 +130,22 @@ export function calculateScore(property, user) {
   if (user.type && property.type && !isGenericRequest) {
       t = property.type.toLowerCase().includes(user.type.toLowerCase()) ? 1 : 0.7;
   }
+  
+  // Only apply the type penalty/score if the user actually specified a type
+  if (!user.typeSpecified) {
+      t = 1.0;
+  }
 
   const details = {
     priceScore: p,
     bhkScore: b,
     amenitiesScore: a,
+    derivedScore: d,
     typeScore: t,
     isWithinBudget: property.price <= user.budget.max,
-    matchesBHK: propertyBHK === user.bhk.preferred[0]
+    matchesBHK: propertyBHK === user.bhk.preferred[0],
+    amenitiesSpecified: (user.amenities && user.amenities.length > 0) || 
+                        (user.derived_preferences && Object.values(user.derived_preferences).some(v => v === true))
   };
 
   const diff = propertyBHK - user.bhk.preferred[0];
@@ -128,7 +156,7 @@ export function calculateScore(property, user) {
   if (user.bhkSpecified && diff < -1) {
       return { 
           total: 0, 
-          details: { priceScore: p, bhkScore: 0, amenitiesScore: a, typeScore: t, isWithinBudget: property.price <= user.budget.max, matchesBHK: false } 
+          details: { ...details, bhkScore: 0, matchesBHK: false } 
       };
   }
 
@@ -137,6 +165,13 @@ export function calculateScore(property, user) {
     0.25 * (user.bhkSpecified ? b : 1.0) +
     0.20 * a +
     0.15 * t;
+
+  // Apply Derived Boost (Inferred preferences like 'Luxury' or 'Transit' only increase the score)
+  const hasDerivedPrefs = user.derived_preferences && Object.values(user.derived_preferences).some(v => v === true);
+  if (hasDerivedPrefs && d > 0) {
+      // Add a small priority boost based on derived match, capped at 1.0 total
+      score += (0.05 * d); 
+  }
 
   // Apply specific BHK penalties only if BHK was requested
   if (user.bhkSpecified) {
@@ -147,16 +182,43 @@ export function calculateScore(property, user) {
       }
   }
 
-  // 12. LOCALITY VALIDATION (Strict)
+  // 11. CITY VALIDATION (Mandatory if provided)
+  const requestedCity = (user.city || "").toLowerCase().trim();
+  const propertyCity = (property.city || "").toLowerCase().trim();
+  const propertyFullLocation = (property.location || "").toLowerCase().trim();
+
+  // If a city was provided, it MUST match the property city or be part of the full address.
+  if (requestedCity) {
+     const isCityMatch = propertyCity.includes(requestedCity) || 
+                         requestedCity.includes(propertyCity) ||
+                         propertyFullLocation.includes(requestedCity);
+
+     if (!isCityMatch) {
+       return {
+         total: 0,
+         details: { ...details, cityMatch: false }
+       };
+     }
+  }
+
+  // 12. LOCALITY VALIDATION (Robust)
   const requestedLocality = (user.locality || "").toLowerCase().trim();
   const propertyLocality = (property.locality || "").toLowerCase().trim();
+  const fullLocation = (property.location || "").toLowerCase().trim();
 
-  // If user asked for a locality and it doesn't match exactly, score is 0
-  if (requestedLocality && requestedLocality !== propertyLocality) {
-    return {
-      total: 0,
-      details: { ...details, localityMatch: false }
-    };
+  // If user asked for a locality, check if it matches EXACTLY, is a SUBSTRING, 
+  // or if it exists within the FULL location string.
+  if (requestedLocality) {
+    const isMatch = propertyLocality.includes(requestedLocality) || 
+                    requestedLocality.includes(propertyLocality) ||
+                    fullLocation.includes(requestedLocality);
+
+    if (!isMatch) {
+      return {
+        total: 0,
+        details: { ...details, localityMatch: false }
+      };
+    }
   }
 
   // Final cap: score should never exceed 1.0 (100%)
@@ -180,9 +242,22 @@ export const nlSearch = async (req, res) => {
 
     const parsed = await parseWithGrok(input);
     const user = validate(parsed, input);
-    const query = buildQuery(user);
+    let query = buildQuery(user);
 
-    const properties = await Property.find(query);
+    let properties = await Property.find(query);
+
+    // Fallback: If no results found with specific city/locality fields, 
+    // try searching in the combined 'location' field.
+    if (properties.length === 0 && (user.city || user.locality)) {
+      const fallbackQuery = { status: 'active' };
+      const searchTerms = [user.city, user.locality].filter(Boolean);
+      
+      fallbackQuery.$or = searchTerms.map(term => ({
+        location: new RegExp(term, 'i')
+      }));
+
+      properties = await Property.find(fallbackQuery);
+    }
 
     const ranked = properties
       .map(p => {

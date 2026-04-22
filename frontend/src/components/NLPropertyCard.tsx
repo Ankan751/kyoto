@@ -23,6 +23,7 @@ interface NLPropertyCardProps {
       typeScore: number;
       isWithinBudget: boolean;
       matchesBHK: boolean;
+      amenitiesSpecified?: boolean;
     };
   };
   rank: number;
@@ -129,7 +130,7 @@ const NLPropertyCard: React.FC<NLPropertyCardProps> = ({ property, rank }) => {
                   Exact BHK
                 </span>
               )}
-              {property.scoreDetails.amenitiesScore > 0.7 && (
+              {property.scoreDetails.amenitiesSpecified && property.scoreDetails.amenitiesScore > 0.7 && (
                 <span className="px-2 py-0.5 bg-purple-50 text-purple-600 text-[10px] font-bold rounded-md uppercase tracking-wider">
                   Amenities Match
                 </span>

@@ -45,8 +45,9 @@ export const parseWithGrok = async (input) => {
                         Examples:
                         - "3 bhk in model town under 40 lakh near bus stand" -> {"city": "Jalandhar", "locality": "Model Town", "bhk": {"preferred": [3], "flexible": false}, "budget": {"max": 4000000}, "amenities": [], "derived_preferences": {"transport_access": true}}
                         
-                        If city is not mentioned, infer it if possible or leave empty.
-                        If the user uses a generic term like "property", "place", or "home" without specifying a type (like villa or flat), set "type" to "property".
+                        If city is not mentioned, infer it if possible or leave empty. 
+                        Ensure city and locality are clean property names (e.g., "Gandhinagar" instead of "G Gandhinagar"). 
+                        If the user mentions a specific sub-area like "GIFT City," put it in locality.
                         Always return ONLY the JSON object.`
                     },
                     {
